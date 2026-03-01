@@ -123,62 +123,58 @@ export default function Simulator() {
                 FIREまであと
               </div>
 
-              <div className="text-3xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent leading-tight">
+              <div className="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent leading-tight">
                 {result.replace("FIREまであと ", "")}
               </div>
             </div>
 
-            {chartData.length > 0 && (
-              <div className="mt-6 w-full h-60 sm:h-64 md:h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={chartData}
-                    margin={{ top: 10, right: 10, left: 20, bottom: 10 }}
-                  >
-                    <XAxis
-                      dataKey="year"
-                      stroke="#aaa"
-                      interval="preserveStartEnd"
-                    />
-                    <YAxis
-                      stroke="#aaa"
-                      tickFormatter={(value) =>
-                        Number(value).toLocaleString("ja-JP")
-                      }
-                    />
-                    <Tooltip
-                      formatter={(value) =>
-                        Number(value).toLocaleString("ja-JP") + " 円"
-                      }
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="asset"
-                      stroke="#ff6b00"
-                      strokeWidth={3}
-                      dot={false}
-                      activeDot={{ r: 6 }}
-                    />
-                    {fireYear !== null && fireAsset !== null && (
-                      <ReferenceDot
-                        x={fireYear}
-                        y={fireAsset}
-                        r={7}
-                        fill="#ff4444"
-                        stroke="white"
-                        strokeWidth={2}
-                      />
-                    )}
-                    <ReferenceLine
-                      y={target}
-                      stroke="#ff4444"
-                      strokeDasharray="5 5"
-                      label="FIRE目標"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
+          {chartData.length > 0 && (
+            <div className="hidden sm:block mt-6 w-full h-60 sm:h-64 md:h-72">
+             <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={chartData}
+                margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
+              >
+              <XAxis
+                dataKey="year"
+                stroke="#aaa"
+                interval="preserveStartEnd"
+              />
+              <YAxis
+                stroke="#aaa"
+                tickFormatter={(value) => Number(value).toLocaleString("ja-JP")}
+              />
+              <Tooltip
+                formatter={(value) => Number(value).toLocaleString("ja-JP") + " 円"}
+              />
+              <Line
+                type="monotone"
+                dataKey="asset"
+                stroke="#ff6b00"
+                strokeWidth={3}
+                dot={false}
+                activeDot={{ r: 6 }}
+             />
+              {fireYear !== null && fireAsset !== null && (
+                <ReferenceDot
+                  x={fireYear}
+                  y={fireAsset}
+                  r={7}
+                  fill="#ff4444"
+                  stroke="white"
+                  strokeWidth={2}
+                />
+              )}
+              <ReferenceLine
+                y={target}
+                stroke="#ff4444"
+                strokeDasharray="5 5"
+                label={{ value: "FIRE目標", position: "insideTopRight", fill: "#ff4444", fontSize: 12 }}
+              />
+              </LineChart>
+              </ResponsiveContainer>
               </div>
-            )}
+          )}
           </motion.div>
         )}
       </div>
