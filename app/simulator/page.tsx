@@ -12,13 +12,14 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from "recharts";
+import { simulateFire } from "../../lib/fireEngine";
 
 export default function Simulator() {
   const [asset, setAsset] = useState<number>(0);
   const [expense, setExpense] = useState<number>(0);
   const [contribution, setContribution] = useState<number>(0);
   const [result, setResult] = useState<string>("");
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{ year: number; asset: number }[]>([]);
   const [target, setTarget] = useState<number>(0);
   const [fireYear, setFireYear] = useState<number | null>(null);
   const [fireAsset, setFireAsset] = useState<number | null>(null);
@@ -29,29 +30,21 @@ export default function Simulator() {
       return;
     }
 
-    const r = 0.05;
-    const fireTarget = expense / 0.04;
-    setTarget(fireTarget);
+    const resultData = simulateFire({
+      asset,
+      expense,
+      contribution,
+      returnRate: 0.05,      // 年利5%
+      inflationRate: 0.02,   // インフレ2%
+      withdrawalRate: 0.04,  // 4%ルール
+    });
 
-    let data = [];
-    let current = asset;
-    let n = 0;
+    setTarget(resultData.fireTarget);
+    setFireYear(resultData.years);
+    setFireAsset(resultData.finalAsset);
+    setChartData(resultData.data);
 
-    while (current < fireTarget && n < 60) {
-      current = current * (1 + r) + contribution;
-      n++;
-
-      data.push({
-        year: n,
-        asset: Math.floor(current),
-      });
-    }
-
-    setFireYear(n);
-    setFireAsset(current);
-    setChartData(data);
-
-    setResult(`FIREまであと ${n}年0ヶ月`);
+    setResult(`FIREまであと ${resultData.years}年0ヶ月`);
   };
 
   return (
@@ -62,7 +55,6 @@ export default function Simulator() {
         </h1>
 
         <div className="space-y-6">
-          {/* 入力共通 */}
           <input
             type="text"
             inputMode="numeric"
@@ -128,53 +120,54 @@ export default function Simulator() {
               </div>
             </div>
 
-          {chartData.length > 0 && (
-            <div className="hidden sm:block mt-6 w-full h-60 sm:h-64 md:h-72">
-             <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={chartData}
-                margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
-              >
-              <XAxis
-                dataKey="year"
-                stroke="#aaa"
-                interval="preserveStartEnd"
-              />
-              <YAxis
-                stroke="#aaa"
-                tickFormatter={(value) => Number(value).toLocaleString("ja-JP")}
-              />
-              <Tooltip
-                formatter={(value) => Number(value).toLocaleString("ja-JP") + " 円"}
-              />
-              <Line
-                type="monotone"
-                dataKey="asset"
-                stroke="#ff6b00"
-                strokeWidth={3}
-                dot={false}
-                activeDot={{ r: 6 }}
-             />
-              {fireYear !== null && fireAsset !== null && (
-                <ReferenceDot
-                  x={fireYear}
-                  y={fireAsset}
-                  r={7}
-                  fill="#ff4444"
-                  stroke="white"
-                  strokeWidth={2}
-                />
-              )}
-              <ReferenceLine
-                y={target}
-                stroke="#ff4444"
-                strokeDasharray="5 5"
-                label={{ value: "FIRE目標", position: "insideTopRight", fill: "#ff4444", fontSize: 12 }}
-              />
-              </LineChart>
-              </ResponsiveContainer>
+            {chartData.length > 0 && (
+              <div className="hidden sm:block mt-6 w-full h-60 sm:h-64 md:h-72">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <XAxis dataKey="year" stroke="#aaa" />
+                    <YAxis
+                      stroke="#aaa"
+                      tickFormatter={(value) =>
+                        Number(value).toLocaleString("ja-JP")
+                      }
+                    />
+                    <Tooltip
+                      formatter={(value) =>
+                        Number(value).toLocaleString("ja-JP") + " 円"
+                      }
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="asset"
+                      stroke="#ff6b00"
+                      strokeWidth={3}
+                      dot={false}
+                    />
+                    {fireYear !== null && fireAsset !== null && (
+                      <ReferenceDot
+                        x={fireYear}
+                        y={fireAsset}
+                        r={7}
+                        fill="#ff4444"
+                        stroke="white"
+                        strokeWidth={2}
+                      />
+                    )}
+                    <ReferenceLine
+                      y={target}
+                      stroke="#ff4444"
+                      strokeDasharray="5 5"
+                      label={{
+                        value: "FIRE目標",
+                        position: "insideTopRight",
+                        fill: "#ff4444",
+                        fontSize: 12,
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-          )}
+            )}
           </motion.div>
         )}
       </div>
