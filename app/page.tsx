@@ -3,7 +3,7 @@ export default function Home() {
     <main className="bg-black text-white">
 
       {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center text-center px-6">
+      <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
 
         <h1 className="text-4xl font-bold mb-4">
           あなたの総資産で、FIREまであと何年？
@@ -20,8 +20,19 @@ export default function Home() {
           無料でシミュレーションする
         </a>
 
-      </section>
+        <div className="absolute bottom-10 flex flex-col items-center text-gray-500 animate-bounce">
 
+          <span className="text-sm mb-1">
+            Scroll
+          </span>
+
+          <span className="text-2xl">
+            ↓
+          </span>
+
+        </div>
+
+      </section>
       {/* このツールで分かること */}
       <section className="py-24 px-6 max-w-5xl mx-auto text-center">
 
