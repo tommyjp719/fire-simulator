@@ -12,14 +12,21 @@ import {
   ReferenceLine,
   ReferenceDot,
 } from "recharts";
-import { simulateFire } from "../../lib/fireEngine";
+
+import { simulateFire } from "@/lib/fireEngine";
+
+type ChartPoint = {
+  year: number;
+  asset: number;
+};
 
 export default function Simulator() {
   const [asset, setAsset] = useState<number>(0);
   const [expense, setExpense] = useState<number>(0);
   const [contribution, setContribution] = useState<number>(0);
   const [result, setResult] = useState<string>("");
-  const [chartData, setChartData] = useState<{ year: number; asset: number }[]>([]);
+
+  const [chartData, setChartData] = useState<ChartPoint[]>([]);
   const [target, setTarget] = useState<number>(0);
   const [fireYear, setFireYear] = useState<number | null>(null);
   const [fireAsset, setFireAsset] = useState<number | null>(null);
@@ -34,9 +41,9 @@ export default function Simulator() {
       asset,
       expense,
       contribution,
-      returnRate: 0.05,      // 年利5%
-      inflationRate: 0.02,   // インフレ2%
-      withdrawalRate: 0.04,  // 4%ルール
+      returnRate: 0.05,
+      inflationRate: 0.02,
+      withdrawalRate: 0.04,
     });
 
     setTarget(resultData.fireTarget);
@@ -48,129 +55,126 @@ export default function Simulator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 flex items-center justify-center px-4 sm:px-6">
-      <div className="w-full max-w-xl bg-gray-900/80 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl border border-gray-800">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white text-center mb-6 sm:mb-8 tracking-tight">
+    <section className="py-24 px-4 sm:px-6 flex justify-center">
+      <div className="w-full max-w-xl bg-slate-900/70 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl border border-slate-800">
+
+        <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8">
           FIREシミュレーター
-        </h1>
+        </h2>
 
         <div className="space-y-6">
+
           <input
             type="text"
             inputMode="numeric"
-            placeholder="現在総資産"
+            placeholder="現在の総資産（例：3,000,000）"
             value={asset ? asset.toLocaleString() : ""}
             onChange={(e) => {
               const raw = e.target.value.replace(/,/g, "");
               if (!isNaN(Number(raw))) setAsset(Number(raw));
             }}
-            className="w-full p-4 text-base rounded-xl bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full p-4 rounded-xl bg-slate-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
 
           <input
             type="text"
             inputMode="numeric"
-            placeholder="年間生活費"
+            placeholder="年間生活費（例：2,400,000）"
             value={expense ? expense.toLocaleString() : ""}
             onChange={(e) => {
               const raw = e.target.value.replace(/,/g, "");
               if (!isNaN(Number(raw))) setExpense(Number(raw));
             }}
-            className="w-full p-4 text-base rounded-xl bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full p-4 rounded-xl bg-slate-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
 
           <input
             type="text"
             inputMode="numeric"
-            placeholder="年間追加投資"
+            placeholder="年間追加投資（例：600,000）"
             value={contribution ? contribution.toLocaleString() : ""}
             onChange={(e) => {
               const raw = e.target.value.replace(/,/g, "");
               if (!isNaN(Number(raw))) setContribution(Number(raw));
             }}
-            className="w-full p-4 text-base rounded-xl bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-full p-4 rounded-xl bg-slate-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
           />
 
           <button
             onClick={calculate}
-            className="w-full py-4 text-lg rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-semibold hover:opacity-90 transition-all duration-200 shadow-lg"
+            className="w-full py-4 text-lg rounded-xl bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold"
           >
-            計算する
+            FIRE年数を計算する
           </button>
+
         </div>
 
         {result && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mt-10 text-center"
+            className="mt-12 text-center"
           >
-            <div className="text-gray-400 text-sm mb-3 tracking-wider">
+
+            <div className="text-gray-400 text-sm mb-3">
               シミュレーション結果
             </div>
 
-            <div className="flex flex-col items-center mb-6">
-              <div className="text-xl sm:text-2xl text-gray-300 mb-2">
-                FIREまであと
-              </div>
-
-              <div className="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent leading-tight">
-                {result.replace("FIREまであと ", "")}
-              </div>
+            <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-6">
+              {result.replace("FIREまであと ", "")}
             </div>
 
             {chartData.length > 0 && (
-              <div className="hidden sm:block mt-6 w-full h-60 sm:h-64 md:h-72">
+              <div className="hidden sm:block w-full h-64">
+
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
+
                     <XAxis dataKey="year" stroke="#aaa" />
+
                     <YAxis
                       stroke="#aaa"
-                      tickFormatter={(value) =>
-                        Number(value).toLocaleString("ja-JP")
-                      }
+                      tickFormatter={(v) => Number(v).toLocaleString("ja-JP")}
                     />
+
                     <Tooltip
-                      formatter={(value) =>
-                        Number(value).toLocaleString("ja-JP") + " 円"
-                      }
+                      formatter={(v) => Number(v).toLocaleString("ja-JP") + " 円"}
                     />
+
                     <Line
                       type="monotone"
                       dataKey="asset"
-                      stroke="#ff6b00"
+                      stroke="#f97316"
                       strokeWidth={3}
                       dot={false}
                     />
-                    {fireYear !== null && fireAsset !== null && (
+
+                    {fireYear && fireAsset && (
                       <ReferenceDot
                         x={fireYear}
                         y={fireAsset}
                         r={7}
                         fill="#ff4444"
                         stroke="white"
-                        strokeWidth={2}
                       />
                     )}
+
                     <ReferenceLine
                       y={target}
                       stroke="#ff4444"
                       strokeDasharray="5 5"
-                      label={{
-                        value: "FIRE目標",
-                        position: "insideTopRight",
-                        fill: "#ff4444",
-                        fontSize: 12,
-                      }}
                     />
+
                   </LineChart>
                 </ResponsiveContainer>
+
               </div>
             )}
+
           </motion.div>
         )}
+
       </div>
-    </div>
+    </section>
   );
 }
