@@ -5,7 +5,7 @@ export default function Home() {
       {/* Hero */}
       <section className="min-h-[80vh] flex flex-col items-center justify-center text-center px-6">
 
-        <h1 className="text-4xl font-bold mb-4">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">
           あなたの総資産で、FIREまであと何年？
         </h1>
 
@@ -15,19 +15,20 @@ export default function Home() {
 
         <a
           href="/simulator"
-          className="bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg font-semibold"
+          className="bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg font-semibold transition"
         >
           無料でシミュレーションする
         </a>
 
-        <div className="mt-16 flex flex-col items-center text-gray-500 animate-bounce">
+        <div className="mt-12 flex flex-col items-center text-gray-500 animate-bounce">
           <span className="text-sm mb-1">Scroll</span>
           <span className="text-2xl">↓</span>
         </div>
 
       </section>
+
       {/* このツールで分かること */}
-      <section className="py-24 px-6 max-w-5xl mx-auto text-center">
+      <section className="py-20 px-6 max-w-5xl mx-auto text-center">
 
         <h2 className="text-3xl font-bold mb-12">
           このツールで分かること
@@ -67,7 +68,7 @@ export default function Home() {
       </section>
 
       {/* FIREとは */}
-      <section className="py-24 px-6 bg-gray-950 text-center">
+      <section className="py-20 px-6 bg-gray-950 text-center">
 
         <div className="max-w-3xl mx-auto">
 
@@ -86,7 +87,7 @@ export default function Home() {
       </section>
 
       {/* 今後追加予定 */}
-      <section className="py-24 px-6 max-w-5xl mx-auto text-center">
+      <section className="py-20 px-6 max-w-5xl mx-auto text-center">
 
         <h2 className="text-3xl font-bold mb-12">
           今後追加予定
