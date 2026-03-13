@@ -30,12 +30,11 @@ export default function Simulator() {
   const [target, setTarget] = useState<number>(0);
   const [fireYear, setFireYear] = useState<number | null>(null);
   const [fireAsset, setFireAsset] = useState<number | null>(null);
-
   const calculate = () => {
-    if (expense <= 0) {
-      setResult("年間生活費を入力してください");
-      return;
-    }
+    if (!asset || !expense) {
+        setResult("総資産と年間生活費を入力してください");
+        return;
+      }
 
     const resultData = simulateFire({
       asset,
@@ -120,9 +119,15 @@ export default function Simulator() {
               シミュレーション結果
             </div>
 
-            <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-6">
-              {result.replace("FIREまであと ", "")}
-            </div>
+           {fireYear !== null ? (
+              <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-6">
+               FIREまであと {fireYear}年
+              </div>
+              ) : (
+              <div className="text-lg text-orange-400 mt-4">
+               {result}
+             </div>
+            )}
 
             {chartData.length > 0 && (
               <div className="hidden sm:block w-full h-64">
