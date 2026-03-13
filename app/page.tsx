@@ -27,6 +27,22 @@ export default function Home() {
 
       </section>
 
+      {/*アプリ画面*/}
+      <section className="py-20 px-6 max-w-6xl mx-auto text-center">
+
+        <h2 className="text-3xl font-blod mb-10">
+          シミュレーション画面
+        </h2>   
+
+        <div className="rounded-xl overlow-hidden border border-gray-800 shadow-lg">
+          <img
+           src="/app-preview.png"
+           alt="FIRE Simulator preview"
+           className="w-full"
+           />
+        </div>
+       </section>
+
       {/* このツールで分かること */}
       <section className="py-20 px-6 max-w-5xl mx-auto text-center">
 
@@ -125,6 +141,20 @@ export default function Home() {
         </div>
 
       </section>
+      
+      {/*CTA*/}
+      <section className="py-24 text-center bg-gray-950">
+
+        <h2 className="text-3xl font-blod mb-6">
+          今すぐFIRE年数を計算してみよう
+        </h2>
+       <a
+          href="/simulator"
+          className="bg-orange-500 hover:bg-orange-600 px-6 py-3 rounded-lg font-semibold transition"
+        >
+          無料でシミュレーションする
+        </a>
+       </section>
 
     </main>
   );
