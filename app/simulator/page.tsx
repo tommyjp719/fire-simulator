@@ -24,17 +24,25 @@ export default function Simulator() {
   const [asset, setAsset] = useState<number>(0);
   const [expense, setExpense] = useState<number>(0);
   const [contribution, setContribution] = useState<number>(0);
+
   const [result, setResult] = useState<string>("");
 
   const [chartData, setChartData] = useState<ChartPoint[]>([]);
   const [target, setTarget] = useState<number>(0);
   const [fireYear, setFireYear] = useState<number | null>(null);
   const [fireAsset, setFireAsset] = useState<number | null>(null);
+
   const calculate = () => {
-    if (!asset || !expense) {
-        setResult("総資産と年間生活費を入力してください");
-        return;
-      }
+
+    if (asset <= 0) {
+      setResult("現在の総資産を入力してください");
+      return;
+    }
+
+    if (expense <= 0) {
+      setResult("年間生活費を入力してください");
+      return;
+    }
 
     const resultData = simulateFire({
       asset,
@@ -45,16 +53,31 @@ export default function Simulator() {
       withdrawalRate: 0.04,
     });
 
+    const years = resultData.years;
+    const months = Math.floor((years % 1) * 12);
+
     setTarget(resultData.fireTarget);
-    setFireYear(resultData.years);
+    setFireYear(Math.floor(years));
     setFireAsset(resultData.finalAsset);
     setChartData(resultData.data);
 
-    setResult(`FIREまであと ${resultData.years}年0ヶ月`);
+    setResult(`FIREまであと ${Math.floor(years)}年${months}ヶ月`);
+  };
+
+  const shareToX = () => {
+
+    const text = encodeURIComponent(result + "\n\nFIREシミュレーター");
+    const url = encodeURIComponent("https://fire-simulator-psi.vercel.app/");
+
+    window.open(
+      `https://twitter.com/intent/tweet?text=${text}&url=${url}`,
+      "_blank"
+    );
   };
 
   return (
     <section className="py-24 px-4 sm:px-6 flex justify-center">
+
       <div className="w-full max-w-xl bg-slate-900/70 backdrop-blur-xl p-6 sm:p-10 rounded-2xl shadow-2xl border border-slate-800">
 
         <h2 className="text-2xl sm:text-3xl font-bold text-white text-center mb-8">
@@ -119,17 +142,16 @@ export default function Simulator() {
               シミュレーション結果
             </div>
 
-           {fireYear !== null ? (
-              <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-6">
-               FIREまであと {fireYear}年
-              </div>
-              ) : (
-              <div className="text-lg text-orange-400 mt-4">
-               {result}
-             </div>
-            )}
+            <div className="text-4xl sm:text-5xl font-black text-orange-500 mb-6">
+              {result.replace("FIREまであと ", "")}
+            </div>
+
+            <div className="text-gray-400 mb-6">
+              必要資産：{target.toLocaleString()} 円
+            </div>
 
             {chartData.length > 0 && (
+
               <div className="w-full h-72 sm:h-64">
 
                 <ResponsiveContainer width="100%" height="100%">
@@ -174,12 +196,21 @@ export default function Simulator() {
                 </ResponsiveContainer>
 
               </div>
+
             )}
+
+            <button
+              onClick={shareToX}
+              className="mt-8 px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold"
+            >
+              Xでシェア
+            </button>
 
           </motion.div>
         )}
 
       </div>
+
     </section>
   );
 }
